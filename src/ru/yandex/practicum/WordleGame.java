@@ -11,7 +11,7 @@ public class WordleGame {
 
     private String answer;
     private int steps;
-    private final int MAX_STEPS = 6;
+    private final int maxSteps = 6;
 
     private final List<String> guesses = new ArrayList<>();
     private final List<String> patterns = new ArrayList<>();
@@ -25,7 +25,7 @@ public class WordleGame {
         this.log = log;
 
         this.answer = dictionary.getRandomWord();
-        this.steps = MAX_STEPS;
+        this.steps = maxSteps;
         this.isWon = false;
         this.isFinished = false;
 
@@ -66,7 +66,9 @@ public class WordleGame {
         List<String> candidates = new ArrayList<>();
 
         for (String word : dictionary.allWords()) {
-            if (usedWords.contains(word)) continue;
+            if (usedWords.contains(word)) {
+                continue;
+            }
 
             boolean ok = true;
             for (int i = 0; i < guesses.size(); i++) {
@@ -79,7 +81,9 @@ public class WordleGame {
                 }
             }
 
-            if (ok) candidates.add(word);
+            if (ok) {
+                candidates.add(word);
+            }
         }
 
         candidates.removeAll(usedWords);
@@ -97,15 +101,32 @@ public class WordleGame {
     }
 
     private boolean isValidGuess(String s) {
-        if (s.length() != 5) return false;
-        for (char c : s.toCharArray()) {
-            if (c < 'а' || c > 'я') return false;
+        if (s.length() != 5) {
+            return false;
         }
+
+        for (char c : s.toCharArray()) {
+            if (c < 'а' || c > 'я') {
+                return false;
+            }
+        }
+
         return true;
     }
 
-    public boolean isWon() { return isWon; }
-    public boolean isFinished() { return isFinished; }
-    public int stepsLeft() { return steps; }
-    public String getAnswer() { return answer; }
+    public boolean isWon() {
+        return isWon;
+    }
+
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public int stepsLeft() {
+        return steps;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
 }
