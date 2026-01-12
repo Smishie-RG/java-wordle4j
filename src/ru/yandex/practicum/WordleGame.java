@@ -1,23 +1,111 @@
 package ru.yandex.practicum;
 
-/*
-в этом классе хранится словарь и состояние игры
-    текущий шаг
-    всё что пользователь вводил
-    правильный ответ
+import java.io.PrintWriter;
+import java.util.*;
 
-в этом классе нужны методы, которые
-    проанализируют совпадение слова с ответом
-    предложат слово-подсказку с учётом всего, что вводил пользователь ранее
-
-не забудьте про специальные типы исключений для игровых и неигровых ошибок
- */
 public class WordleGame {
 
+    private final WordleDictionary dictionary;
+    private final PrintWriter log;
+    private final WordleEvaluator evaluator = new WordleEvaluator();
+
     private String answer;
-
     private int steps;
+    private final int MAX_STEPS = 6;
 
-    private WordleDictionary dictionary;
+    private final List<String> guesses = new ArrayList<>();
+    private final List<String> patterns = new ArrayList<>();
+    private final Set<String> usedWords = new HashSet<>();
 
+    private boolean isWon;
+    private boolean isFinished;
+
+    public WordleGame(WordleDictionary dictionary, PrintWriter log) {
+        this.dictionary = dictionary;
+        this.log = log;
+
+        this.answer = dictionary.getRandomWord();
+        this.steps = MAX_STEPS;
+        this.isWon = false;
+        this.isFinished = false;
+
+        log.println("Загаданное слово: " + answer);
+    }
+
+    public TurnResult makeTurn(String input) throws GameException {
+        String guess = WordleDictionary.normalize(input);
+
+        if (!isValidGuess(guess)) {
+            throw new InvalidWordFormatException("нужно слово из 5 русских букв");
+        }
+
+        if (!dictionary.contains(guess)) {
+            throw new WordNotFoundInDictionaryException("Слова нет в словаре");
+        }
+
+        steps--;
+        usedWords.add(guess);
+        String pattern = evaluator.evaluate(guess, answer);
+
+        guesses.add(guess);
+        patterns.add(pattern);
+
+        if (guess.equals(answer)) {
+            isWon = true;
+            isFinished = true;
+        }
+
+        if (steps == 0 && !isWon) {
+            isFinished = true;
+        }
+
+        return new TurnResult(guess, pattern);
+    }
+
+    public String suggest() {
+        List<String> candidates = new ArrayList<>();
+
+        for (String word : dictionary.allWords()) {
+            if (usedWords.contains(word)) continue;
+
+            boolean ok = true;
+            for (int i = 0; i < guesses.size(); i++) {
+                String g = guesses.get(i);
+                String p = patterns.get(i);
+
+                if (!evaluator.evaluate(g, word).equals(p)) {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok) candidates.add(word);
+        }
+
+        candidates.removeAll(usedWords);
+
+        if (candidates.isEmpty()) {
+            log.println("Подходящих слов для подсказки не найдено");
+            return null;
+        }
+
+        Random rnd = new Random();
+        String hint = candidates.get(rnd.nextInt(candidates.size()));
+        usedWords.add(hint);
+        log.println("Подсказка: " + hint + " (всего вариантов: " + candidates.size() + ")");
+        return hint;
+    }
+
+    private boolean isValidGuess(String s) {
+        if (s.length() != 5) return false;
+        for (char c : s.toCharArray()) {
+            if (c < 'а' || c > 'я') return false;
+        }
+        return true;
+    }
+
+    public boolean isWon() { return isWon; }
+    public boolean isFinished() { return isFinished; }
+    public int stepsLeft() { return steps; }
+    public String getAnswer() { return answer; }
 }
