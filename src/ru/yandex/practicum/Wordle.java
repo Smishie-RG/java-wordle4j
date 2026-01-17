@@ -19,16 +19,10 @@ public class Wordle {
             Scanner scanner = new Scanner(System.in);
 
             while (!game.isFinished()) {
-                System.out.println("Введите слово (Enter — подсказка):");
+                System.out.println("Введите слово:");
                 String input = scanner.nextLine();
 
                 try {
-                    if (input.isBlank()) {
-                        String hint = game.suggest();
-                        System.out.println(hint);
-                        continue;
-                    }
-
                     TurnResult result = game.makeTurn(input);
                     System.out.println(result.word());
                     System.out.println(result.pattern());
@@ -43,6 +37,7 @@ public class Wordle {
                 System.out.println("Победа!");
             } else {
                 System.out.println("Попытки закончились.");
+                System.out.println("Загаданное слово: " + game.getAnswer());
             }
 
         } catch (ProgramException e) {

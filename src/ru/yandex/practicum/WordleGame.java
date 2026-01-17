@@ -29,7 +29,6 @@ public class WordleGame {
         this.isWon = false;
         this.isFinished = false;
 
-        log.println("Загаданное слово: " + answer);
     }
 
     public TurnResult makeTurn(String input) throws GameException {
