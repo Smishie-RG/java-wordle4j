@@ -26,7 +26,7 @@ public class Wordle {
                     TurnResult result = game.makeTurn(input);
                     System.out.println(result.word());
                     System.out.println(result.pattern());
-                    System.out.println("Осталось попыток: " + game.stepsLeft());
+                    System.out.println("Осталось попыток:  " + game.stepsLeft());
 
                 } catch (GameException e) {
                     System.out.println("Ошибка: " + e.getMessage());
