@@ -29,7 +29,7 @@ public class Wordle {
                     System.out.println("Осталось попыток:  " + game.stepsLeft());
 
                 } catch (GameException e) {
-                    System.out.println("Ошибка: " + e.getMessage());
+                    System.out.println("Ошибка:  " + e.getMessage());
                 }
             }
 
